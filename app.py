@@ -65,21 +65,19 @@ def check_models_trained():
     return mnist_exists, shape_exists
 
 def main():
-    st.markdown('<div class="main-header">🔍 Nhận Dạng Chữ Viết Tay & Hình Học</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Nhận Dạng Chữ Viết Tay & Hình Dạng Đơn Giản</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Sử dụng Mạng Neural Tích Chập (CNN) với Xử Lý Ảnh Nâng Cao</div>', unsafe_allow_html=True)
     
     with st.sidebar:
-        st.image("https://img.icons8.com/color/96/000000/artificial-intelligence.png", width=80)
-        st.title("📋 Menu Điều Hướng")
-        
         page = st.radio(
-            "Chọn chức năng:",
+            "",
             [
                 "🏠 Trang Chủ",
                 "🔢 Nhận Dạng Chữ Số Viết Tay",
                 "🔷 Nhận Dạng Hình Dạng Đơn Giản",
                 "⚙️ Train Model"
-            ]
+            ],
+            label_visibility="collapsed"
         )
     
     if page == "🏠 Trang Chủ":
@@ -107,40 +105,11 @@ def show_home_page():
             st.metric("Shape Model", "❌ Chưa có", "Cần train")
     
     if mnist_trained and shape_trained:
-        st.success("✅ Tất cả models đã sẵn sàng! Bắt đầu khám phá các tính năng nhận dạng ngay.")
-        st.info("💡 **Mẹo:** Sử dụng menu bên trái để chọn chức năng nhận dạng.")
+        st.success("✅ Tất cả models đã sẵn sàng!")
     else:
         st.warning("⚠️ **Thiếu models!** Vui lòng vào trang **'⚙️ Train Model'** để train models trước.")
-        st.info("""
-        **Cách train:**
-        1. Vào trang **'⚙️ Train Model'**
-        2. Train MNIST Model (~2-3 phút)
-        3. Train Shape Model (~5-7 phút)
-        """)
         
-    st.markdown("---")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("### 🔢 Nhận Dạng Chữ Số Viết Tay")
-        st.info("Nhận dạng chữ số từ 0-9 với độ chính xác >95%")
-        st.markdown("**Tính năng:**")
-        st.markdown("- ✏️ Vẽ số trực tiếp trên canvas")
-        st.markdown("- 📤 Upload ảnh chứa chữ số")
-        st.markdown("- 📦 Xử lý nhiều ảnh cùng lúc")
-        st.markdown("- 📊 Hiển thị độ tin cậy và xác suất")
-        st.markdown("- 💾 Export kết quả (CSV/JSON)")
-        
-    with col2:
-        st.markdown("### 🔷 Nhận Dạng Hình Dạng Đơn Giản")
-        st.success("Nhận dạng 8 loại hình: Circle, Rectangle, Square, Triangle, Pentagon, Hexagon, Oval, Diamond")
-        st.markdown("**Tính năng:**")
-        st.markdown("- ✏️ Vẽ hình trực tiếp trên canvas")
-        st.markdown("- 📤 Upload ảnh chứa hình")
-        st.markdown("- 🎨 Demo với ảnh mẫu có sẵn")
-        st.markdown("- 📊 Hiển thị confidence score")
-        st.markdown("- 🎯 Top-3 predictions")
+
 
 def show_mnist_page():
     st.header("🔢 Nhận Dạng Chữ Số Viết Tay")
@@ -159,7 +128,7 @@ def show_mnist_page():
         """)
         return
     
-    tab1, tab2, tab3 = st.tabs(["✏️ Vẽ Tay", "📤 Upload Ảnh", "📦 Batch Processing"])
+    tab1, tab2 = st.tabs(["✏️ Vẽ Tay", "📤 Upload Ảnh"])
     
     with tab1:
         st.subheader("Vẽ chữ số từ 0-9")
@@ -229,59 +198,6 @@ def show_mnist_page():
                 top3_indices = np.argsort(probs)[-3:][::-1]
                 for idx in top3_indices:
                     st.write(f"{idx}: {probs[idx]*100:.2f}%")
-    
-    with tab3:
-        st.subheader("Xử lý nhiều ảnh cùng lúc")
-        
-        uploaded_files = st.file_uploader(
-            "Upload nhiều ảnh", 
-            type=['png', 'jpg', 'jpeg'], 
-            accept_multiple_files=True,
-            key="mnist_batch"
-        )
-        
-        if uploaded_files:
-            if st.button("🔍 Nhận Dạng Tất Cả", type="primary"):
-                results = []
-                images_processed = []
-                
-                progress_bar = st.progress(0)
-                
-                for i, file in enumerate(uploaded_files):
-                    image = Image.open(file)
-                    preprocessed = ImageProcessor.preprocess_for_mnist(image)
-                    images_processed.append(preprocessed)
-                    
-                    pred_class, confidence, _ = model.predict(preprocessed)
-                    
-                    results.append({
-                        'Tên file': file.name,
-                        'Kết quả': pred_class,
-                        'Độ tin cậy (%)': f"{confidence*100:.2f}"
-                    })
-                    
-                    progress_bar.progress((i + 1) / len(uploaded_files))
-                
-                st.success(f"Đã xử lý {len(uploaded_files)} ảnh!")
-                
-                results_df = pd.DataFrame(results)
-                st.dataframe(results_df, use_container_width=True)
-                
-                csv = results_df.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label="📥 Tải kết quả (CSV)",
-                    data=csv,
-                    file_name='mnist_results.csv',
-                    mime='text/csv',
-                )
-                
-                json_str = results_df.to_json(orient='records', force_ascii=False)
-                st.download_button(
-                    label="📥 Tải kết quả (JSON)",
-                    data=json_str,
-                    file_name='mnist_results.json',
-                    mime='application/json',
-                )
 
 def show_shape_page():
     st.header("🔷 Nhận Dạng Hình Dạng Đơn Giản")
