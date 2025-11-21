@@ -81,20 +81,6 @@ def main():
                 "⚙️ Train Model"
             ]
         )
-        
-        st.markdown("---")
-        st.markdown("### 📖 Thông Tin Dự Án")
-        st.markdown("""
-        **Công Nghệ:**
-        - TensorFlow/Keras
-        - OpenCV
-        - Streamlit
-        
-        **Tính Năng:**
-        - ✅ Nhận dạng chữ số viết tay (0-9)
-        - ✅ Nhận dạng hình dạng đơn giản (8 loại)
-        - ✅ Export kết quả
-        """)
     
     if page == "🏠 Trang Chủ":
         show_home_page()
@@ -155,50 +141,6 @@ def show_home_page():
         st.markdown("- 🎨 Demo với ảnh mẫu có sẵn")
         st.markdown("- 📊 Hiển thị confidence score")
         st.markdown("- 🎯 Top-3 predictions")
-    
-    st.markdown("---")
-    
-    st.markdown("### 🎯 Quy Trình Xử Lý")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown("#### 1️⃣ Input")
-        st.markdown("📸 Upload/Vẽ ảnh")
-    with col2:
-        st.markdown("#### 2️⃣ Preprocessing")
-        st.markdown("🔧 Resize, Normalize")
-    with col3:
-        st.markdown("#### 3️⃣ CNN")
-        st.markdown("🧠 Trích xuất đặc trưng")
-    with col4:
-        st.markdown("#### 4️⃣ Output")
-        st.markdown("✅ Kết quả nhận dạng")
-    
-    st.markdown("---")
-    
-    st.markdown("### 📊 Kiến Trúc CNN")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("#### MNIST Model")
-        st.code("""
-Conv2D(32) -> MaxPool -> BatchNorm
-Conv2D(64) -> MaxPool -> BatchNorm
-Conv2D(128) -> BatchNorm
-Flatten -> Dense(128) -> Dense(10)
-        """)
-        st.caption("Input: 28x28x1 | Output: 10 classes")
-    
-    with col2:
-        st.markdown("#### Shape Model")
-        st.code("""
-Conv2D(32x2) -> MaxPool -> BatchNorm
-Conv2D(64x2) -> MaxPool -> BatchNorm
-Conv2D(128x2) -> MaxPool -> BatchNorm
-Flatten -> Dense(256) -> Dense(8)
-        """)
-        st.caption("Input: 64x64x1 | Output: 8 classes")
 
 def show_mnist_page():
     st.header("🔢 Nhận Dạng Chữ Số Viết Tay")
